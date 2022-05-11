@@ -1,4 +1,3 @@
-import Mustache from "mustache";
 
 const socket = io();
 
@@ -12,14 +11,28 @@ const $messages = document.querySelector('#messages')
 
 //templates
 
-const messageTemplate = document.querySelector('#message-template')
+const messageTemplate = document.querySelector('#message-template').innerHTML
+const locationMessageTemplate = document.querySelector('#location-message-template').innerHTML
+
 
 socket.on("message", (message) => {
-  console.log(message);
-  const html = Mustache.render(messageTemplate)
+  const html = Mustache.render(messageTemplate, {
+    message: message.text,
+    createdAt: moment(message.createdAt).format('h:mm a')
+  })
   $messages.insertAdjacentHTML('beforeend', html)
 
 });
+
+
+socket.on('locationMessage', (url)=>{
+  const html = Mustache.render(locationMessageTemplate, {
+    url: url.url,
+    createdAt: moment(url.createdAt).format('h:mm a')
+    
+  })
+  $messages.insertAdjacentHTML('beforeend', html)
+})
 
 $messageForm.addEventListener("submit", (e) => {
   e.preventDefault();
